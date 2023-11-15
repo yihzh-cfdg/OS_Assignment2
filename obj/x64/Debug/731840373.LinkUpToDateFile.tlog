@@ -1,1 +1,0 @@
-g++ -o "/home/yhz/projects/OS_Assignment2/bin/x64/Debug/OS_Assignment2.out" -Wl,--no-undefined -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack /home/yhz/projects/OS_Assignment2/obj/x64/Debug/test.o
