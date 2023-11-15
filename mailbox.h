@@ -51,8 +51,8 @@ int P(int semid)
     tmp.sem_num = 0;
     tmp.sem_op = -1;
     tmp.sem_flg = SEM_UNDO;
-    //DEBUG
-    printf("Waiting sem %d", semid);
+    // DEBUG
+    printf("Waiting sem %d\n", semid);
     if (semop(semid, &tmp, 1) == -1)
     {
         perror("P Failed\n");
@@ -169,7 +169,7 @@ void printMailbox(Mailbox *mailbox)
     printf("Mailbox %d:\n", mailbox->id);
     printf("wNum: %d, rNum: %d\n", mailbox->wNum, mailbox->rNum);
     printf("buffer:");
-    for(i = 0; i < mailbox->containerCnt; ++i)
+    for (i = 0; i < mailbox->containerCnt; ++i)
     {
         strncpy(str, &mailbox->buffer[i * mailbox->capacity], mailbox->length[i]);
         printf("%s ", str);
@@ -187,7 +187,7 @@ void withdraw(Mailbox *mailbox)
     P(mailbox->mailCnt);
     P(mailbox->wm);
     P(mailbox->rm);
-    if(mailbox->rNum > 0)
+    if (mailbox->rNum > 0)
         mailbox->rNum--;
     V(mailbox->rm);
     V(mailbox->wm);
