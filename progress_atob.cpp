@@ -1,5 +1,4 @@
-#include <iostream>
-#include <string>
+#include <stdio.h>
 #include "mailbox.h"
 #define NUM 8
 #define CAP 128
@@ -7,44 +6,46 @@ using namespace std;
 int main()
 {
     Mailbox *A = InitMailBox(1, NUM, CAP);
-    Mailbox *B = InitMailBox(2, NUM, CAP);
-    string input;
+    Mailbox *B = InitMailBox(5, NUM, CAP);
+    //DEBUG
+    system("ipcs");
+    char input;
     char str[128];
     while (1)
     {
-        cout << "Please input the command:\n";
-        input.clear();
+        printf("Please input the command:\n");
         memset(str, 0, sizeof(str));
-        cin >> input;
-        if (input == "send")
+        input = getchar();
+        if (input == 's')
         {
-            cout << "Please input the message:\n";
-            cin >> str;
+            printf("Please input the message:\n");
+            scanf("%s", str);
             send(A, str, strlen(str));
+            //DEBUG
+            printMailbox(A);
         }
-        else if (input == "receive")
+        else if (input == 'r')
         {
-            cout << "Receive from mailbox:";
+            printf("Receive from mailbox:");
             receive(B, str);
-            cout << str << endl;
+            printf("%s\n", str);
+            //DEBUG
+            printMailbox(B);
         }
-        else if (input == "print")
+        else if (input == 'p')
         {
             printMailbox(A);
         }
-        else if (input == "withdraw")
+        else if (input == 'w')
         {
             withdraw(A);
         }
-        else if (input == "delete")
+        else if (input == 'd')
         {
             deleteMailbox(B);
             break;
         }
-        else
-        {
-            cout << "Invalid command!\n";
-        }
+        getchar();
     }
     return 0;
 }

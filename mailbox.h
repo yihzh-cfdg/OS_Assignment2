@@ -1,5 +1,5 @@
-#ifndef MAILBOX_H
-#define MAILBOX_H
+#ifndef _OS_MAILBOX_H
+#define _OS_MAILBOX_H
 
 #include <errno.h>
 #include <stdio.h>
@@ -9,8 +9,8 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <unistd.h>
-#define mNum 8
-#define mCap 256
+#define NUM 8
+#define CAP 128
 
 union semun
 {
@@ -20,16 +20,16 @@ union semun
     struct seminfo *__buf;     /* buffer for IPC_INFO */
 };
 
-struct sembuf
-{
-    unsigned short int sem_num; /* semaphore number */
-    short int sem_op;           /* semaphore operation */
-    short int sem_flg;          /* operation flag */
-};
+// struct sembuf
+// {
+//     unsigned short int sem_num; /* semaphore number */
+//     short int sem_op;           /* semaphore operation */
+//     short int sem_flg;          /* operation flag */
+// };
 
 int getSem(key_t key)
 {
-    return semget(key, 1, IPC_CREAT | 0666)
+    return semget(key, 1, IPC_CREAT | 0666);
 }
 
 int setSem(int semid, int value)
@@ -51,6 +51,8 @@ int P(int semid)
     tmp.sem_num = 0;
     tmp.sem_op = -1;
     tmp.sem_flg = SEM_UNDO;
+    //DEBUG
+    printf("Waiting sem %d", semid);
     if (semop(semid, &tmp, 1) == -1)
     {
         perror("P Failed\n");
@@ -80,7 +82,7 @@ typedef struct
     int rm;               // "read mutex"
     int wm;               // "write mutex"
     void *shm;            // share memory
-    int head, tail;       // head <= tail
+    int rNum, wNum;       // rNum：最新可读取的信格号, wNum:最新可写入的信格号
     char *buffer;         // 2D vector, buffer[x] == [buffer + x * capacity], maxlen: buffer + containerCnt * capacity
     int *length;          // 1D vector, length of nth message, maxlen: length + containerCnt * sizeof(int)
 } Mailbox;
@@ -91,21 +93,24 @@ Mailbox *InitMailBox(int id, int containerCnt, int capacity)
     int shmid;
     key_t key, k1, k2, k3, k4;
     key = ftok(".", id);
-    shmid = shmget(key, containerCnt * capacity + containerCnt * sizeof(int), IPC_CREAT | 0666);
-    k1 = ftok(".", id + 1 + shmid);
-    k2 = ftok(".", id + 2 + shmid);
-    k3 = ftok(".", id + 3 + shmid);
-    k4 = ftok(".", id + 4 + shmid);
+    shmid = shmget(key, sizeof(char) * containerCnt * capacity + containerCnt * sizeof(int), IPC_CREAT | 0666);
+    k1 = ftok(".", id + 1);
+    k2 = ftok(".", id + 2);
+    k3 = ftok(".", id + 3);
+    k4 = ftok(".", id + 4);
     if (shmid == -1)
     {
         perror("shmget error");
         return NULL;
     }
-    system("ipcs -m");
-    mailbox->shm = shmat(shmid, NULL, 0);
-    mailbox->buffer = (char *)(mailbox->shm);
-    mailbox->length = (int *)(mailbox->shm + containerCnt * capacity);
-    mailbox->id = id;
+    mailbox->buffer = (char *)shmat(shmid, NULL, 0);
+    if (mailbox->buffer == (char *)-1)
+    {
+        perror("shmat"); // Print error message if shmat fails
+        return NULL;
+    }
+    mailbox->length = (int *)(mailbox->buffer + containerCnt * capacity);
+    mailbox->id = shmid;
     mailbox->containerCnt = containerCnt;
     mailbox->capacity = capacity;
     mailbox->mailCnt = getSem(k1);
@@ -116,19 +121,19 @@ Mailbox *InitMailBox(int id, int containerCnt, int capacity)
     setSem(mailbox->freeCnt, capacity);
     setSem(mailbox->rm, 1);
     setSem(mailbox->wm, 1);
-    mailbox->head = mailbox->tail = 0;
+    mailbox->wNum = mailbox->rNum = 0;
     return mailbox;
 }
 
 void send(Mailbox *target, char *str, int len)
 {
-    int t = target->tail, c = target->containerCnt, cap = target->capacity;
+    int w = target->wNum, c = target->containerCnt, cap = target->capacity;
     if (strlen(target->buffer) + len > c * cap)
     {
         perror("out of range");
         return;
     }
-    if (target->tail + 1 > target->containerCnt)
+    if (target->wNum + 1 > target->containerCnt)
     {
         perror("Mailbox is full");
         return;
@@ -137,26 +142,21 @@ void send(Mailbox *target, char *str, int len)
     P(target->freeCnt);
     printf("Send to mailbox: %s\n", str);
     // buffer中每条消息的长度都是capacity
-    strncpy(&target->buffer[t * cap], str, cap);
-    target->length[t] = len;
-    target->tail++;
+    strncpy(&target->buffer[w * cap], str, cap);
+    target->length[w] = len;
+    target->wNum++;
     V(target->mailCnt);
     V(target->wm);
 }
 
 void receive(Mailbox *from, char *str)
 {
-    int h = from->head, c = from->containerCnt, cap = from->capacity;
-    if (from->head == from->tail)
-    {
-        perror("Mailbox is empty");
-        return;
-    }
+    int r = from->rNum, c = from->containerCnt, cap = from->capacity;
     P(from->rm);
     P(from->mailCnt);
-    strncpy(str, &from->buffer[h * cap], from->length[h]);
-    memset(&from->buffer[h * cap], 0, cap);
-    from->head++;
+    strncpy(str, &from->buffer[r * cap], from->length[r]);
+    memset(&from->buffer[r * cap], 0, cap);
+    from->rNum++;
     V(from->freeCnt);
     V(from->rm);
 }
@@ -164,9 +164,18 @@ void receive(Mailbox *from, char *str)
 void printMailbox(Mailbox *mailbox)
 {
     int i;
+    char str[128];
+    memset(str, 0, sizeof(str));
     printf("Mailbox %d:\n", mailbox->id);
-    printf("head: %d, tail: %d\n", mailbox->head, mailbox->tail);
-    printf("buffer: %s\n", mailbox->buffer);
+    printf("wNum: %d, rNum: %d\n", mailbox->wNum, mailbox->rNum);
+    printf("buffer:");
+    for(i = 0; i < mailbox->containerCnt; ++i)
+    {
+        strncpy(str, &mailbox->buffer[i * mailbox->capacity], mailbox->length[i]);
+        printf("%s ", str);
+        memset(str, 0, sizeof(str));
+    }
+    printf("\n");
     printf("length: ");
     for (i = 0; i < mailbox->containerCnt; i++)
         printf("%d ", mailbox->length[i]);
@@ -178,7 +187,8 @@ void withdraw(Mailbox *mailbox)
     P(mailbox->mailCnt);
     P(mailbox->wm);
     P(mailbox->rm);
-    mailbox->tail--;
+    if(mailbox->rNum > 0)
+        mailbox->rNum--;
     V(mailbox->rm);
     V(mailbox->wm);
     V(mailbox->freeCnt);
@@ -194,4 +204,5 @@ void deleteMailbox(Mailbox *mailbox)
     shmctl(mailbox->id, IPC_RMID, NULL);
     free(mailbox);
 }
+
 #endif

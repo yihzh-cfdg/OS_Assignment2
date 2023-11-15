@@ -1,13 +1,8 @@
-#include <stdio.h>
-#include "mailbox.h"
-#define NUM 8
-#define CAP 128
-using namespace std;
+
 int main()
 {
     Mailbox* A = InitMailBox(1, NUM, CAP);
     Mailbox* B = InitMailBox(5, NUM, CAP);
-    //DEBUG
     system("ipcs");
     char input;
     char str[128];
@@ -20,17 +15,14 @@ int main()
         {
             printf("Please input the message:\n");
             scanf("%s", str);
-            send(B, str, strlen(str));
-            //DEBUG
-            printMailbox(B);
+            send(A, str, strlen(str));
+            printMailbox(A);
         }
         else if (input == 'r')
         {
             printf("Receive from mailbox:");
             receive(A, str);
             printf("%s\n", str);
-            //DEBUG
-            printMailbox(A);
         }
         else if (input == 'p')
         {

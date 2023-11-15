@@ -1,9 +1,70 @@
 ﻿  正在验证源
-  正在将源远程复制到“10.198.134.73”
+  正在将源远程复制到“10.132.71.93”
   正在验证体系结构
   正在验证体系结构
   正在启动远程生成
   正在编译源:
-  server.cpp
+  progress_atob.cpp
+D:\Programs\C\OS_Assignment2\mailbox.h(129,38): warning : comparison between signed and unsigned integer expressions [-Wsign-compare]
+D:\Programs\C\OS_Assignment2\mailbox.h(129,38): warning :      if (strlen(target->buffer) + len > c * cap)
+D:\Programs\C\OS_Assignment2\mailbox.h(129,38): warning :          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+D:\Programs\C\OS_Assignment2\mailbox.h(152,25): warning : unused variable ‘c’ [-Wunused-variable]
+D:\Programs\C\OS_Assignment2\mailbox.h(152,25): warning :      int r = from->rNum, c = from->containerCnt, cap = from->capacity;
+D:\Programs\C\OS_Assignment2\mailbox.h(152,25): warning :                          ^
+D:\Programs\C\OS_Assignment2\progress_atob.cpp(17,24): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+D:\Programs\C\OS_Assignment2\progress_atob.cpp(17,24): warning :          input = getchar();
+D:\Programs\C\OS_Assignment2\progress_atob.cpp(17,24): warning :                  ~~~~~~~^~
+D:\Programs\C\OS_Assignment2\progress_atob.cpp(22,32): warning : conversion to ‘int’ from ‘size_t {aka long unsigned int}’ may alter its value [-Wconversion]
+D:\Programs\C\OS_Assignment2\progress_atob.cpp(22,32): warning :              send(A, str, strlen(str));
+D:\Programs\C\OS_Assignment2\progress_atob.cpp(22,32): warning :                           ~~~~~~^~~~~
+  progress_btoa.cpp
+D:\Programs\C\OS_Assignment2\mailbox.h(129,38): warning : comparison between signed and unsigned integer expressions [-Wsign-compare]
+D:\Programs\C\OS_Assignment2\mailbox.h(129,38): warning :      if (strlen(target->buffer) + len > c * cap)
+D:\Programs\C\OS_Assignment2\mailbox.h(129,38): warning :          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+D:\Programs\C\OS_Assignment2\mailbox.h(152,25): warning : unused variable ‘c’ [-Wunused-variable]
+D:\Programs\C\OS_Assignment2\mailbox.h(152,25): warning :      int r = from->rNum, c = from->containerCnt, cap = from->capacity;
+D:\Programs\C\OS_Assignment2\mailbox.h(152,25): warning :                          ^
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(17,24): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(17,24): warning :          input = getchar();
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(17,24): warning :                  ~~~~~~~^~
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(22,32): warning : conversion to ‘int’ from ‘size_t {aka long unsigned int}’ may alter its value [-Wconversion]
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(22,32): warning :              send(B, str, strlen(str));
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(22,32): warning :                           ~~~~~~^~~~~
   正在链接对象
-  OS_Assignment2.vcxproj -> D:\Programs\C\OS_Assignment2\bin\x64\Debug\OS_Assignment2.out
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Application Type\Linux\1.0\Linux.targets(492,5): error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘getSem(int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(31): error : `getSem(int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:31：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘setSem(int, int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(36): error : `setSem(int, int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:36：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘delSem(int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(43): error : `delSem(int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:43：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘P(int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(49): error : `P(int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:49：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘V(int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(63): error : `V(int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:63：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘InitMailBox(int, int, int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(89): error : `InitMailBox(int, int, int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:89：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘send(Mailbox*, char*, int)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(127): error : `send(Mailbox*, char*, int)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:127：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘receive(Mailbox*, char*)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(151): error : `receive(Mailbox*, char*)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:151：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘printMailbox(Mailbox*)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(163): error : `printMailbox(Mailbox*)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:163：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘withdraw(Mailbox*)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(184): error : `withdraw(Mailbox*)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:184：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘deleteMailbox(Mailbox*)’中：
+D:\Programs\C\OS_Assignment2\mailbox.h(196): error : `deleteMailbox(Mailbox*)'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/mailbox.h:196：第一次在此定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/obj/x64/Debug/progress_btoa.o：在函数‘main’中：
+D:\Programs\C\OS_Assignment2\progress_btoa.cpp(7): error : `main'被多次定义
+D:\Programs\C\OS_Assignment2\obj\x64\Debug\progress_atob.o : error : /home/yhz/projects/OS_Assignment2/progress_atob.cpp:7：第一次在此定义
+collect2 : error : ld returned 1 exit status
