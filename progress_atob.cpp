@@ -7,8 +7,6 @@ int main()
 {
     Mailbox *A = InitMailBox(1, NUM, CAP);
     Mailbox *B = InitMailBox(5, NUM, CAP);
-    //DEBUG
-    system("ipcs");
     char input;
     char str[128];
     while (1)
@@ -21,20 +19,19 @@ int main()
             printf("Please input the message:\n");
             scanf("%s", str);
             send(A, str, strlen(str));
-            //DEBUG
-            printMailbox(A);
+            printf("Send to mailbox: %s\n\n", str);
         }
         else if (input == 'r')
         {
-            printf("Receive from mailbox:");
             receive(B, str);
-            printf("%s\n", str);
-            //DEBUG
-            printMailbox(B);
+            printf("Receive from mailbox: %s\n", str);
         }
         else if (input == 'p')
         {
+            printf("A:\n");
             printMailbox(A);
+            printf("B:\n");
+            printMailbox(B);
         }
         else if (input == 'w')
         {

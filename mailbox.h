@@ -51,8 +51,6 @@ int P(int semid)
     tmp.sem_num = 0;
     tmp.sem_op = -1;
     tmp.sem_flg = SEM_UNDO;
-    // DEBUG
-    printf("Waiting sem %d\n", semid);
     if (semop(semid, &tmp, 1) == -1)
     {
         perror("P Failed\n");
@@ -92,12 +90,12 @@ Mailbox *InitMailBox(int id, int containerCnt, int capacity)
     Mailbox *mailbox = (Mailbox *)malloc(sizeof(Mailbox));
     int shmid;
     key_t key, k1, k2, k3, k4;
-    key = ftok(".", id);
+    key = ftok("/etc", id);
     shmid = shmget(key, sizeof(char) * containerCnt * capacity + containerCnt * sizeof(int), IPC_CREAT | 0666);
-    k1 = ftok(".", id + 1);
-    k2 = ftok(".", id + 2);
-    k3 = ftok(".", id + 3);
-    k4 = ftok(".", id + 4);
+    k1 = ftok("/etc", id + 1);
+    k2 = ftok("/etc", id + 2);
+    k3 = ftok("/etc", id + 3);
+    k4 = ftok("/etc", id + 4);
     if (shmid == -1)
     {
         perror("shmget error");
@@ -118,7 +116,7 @@ Mailbox *InitMailBox(int id, int containerCnt, int capacity)
     mailbox->rm = getSem(k3);
     mailbox->wm = getSem(k4);
     setSem(mailbox->mailCnt, 0);
-    setSem(mailbox->freeCnt, capacity);
+    setSem(mailbox->freeCnt, containerCnt);
     setSem(mailbox->rm, 1);
     setSem(mailbox->wm, 1);
     mailbox->wNum = mailbox->rNum = 0;
@@ -138,10 +136,13 @@ void send(Mailbox *target, char *str, int len)
         perror("Mailbox is full");
         return;
     }
+    // DEBUG
+    printf("Sems:\nwm: %d, rm: %d\n", semctl(target->wm, 0, GETVAL), semctl(target->rm, 0, GETVAL));
+    printf("freecnt: %d, mailcnt: %d\n\n", semctl(target->freeCnt, 0, GETVAL), semctl(target->mailCnt, 0, GETVAL));
+
     P(target->wm);
     P(target->freeCnt);
-    printf("Send to mailbox: %s\n", str);
-    // buffer中每条消息的长度都是capacity
+    // buffer中每条消息的长度都是capacity,不够长度的补0
     strncpy(&target->buffer[w * cap], str, cap);
     target->length[w] = len;
     target->wNum++;
@@ -152,6 +153,9 @@ void send(Mailbox *target, char *str, int len)
 void receive(Mailbox *from, char *str)
 {
     int r = from->rNum, c = from->containerCnt, cap = from->capacity;
+    printf("Sems:\nwm: %d, rm: %d\n", semctl(from->wm, 0, GETVAL), semctl(from->rm, 0, GETVAL));
+    printf("freecnt: %d, mailcnt: %d\n\n", semctl(from->freeCnt, 0, GETVAL), semctl(from->mailCnt, 0, GETVAL));
+
     P(from->rm);
     P(from->mailCnt);
     strncpy(str, &from->buffer[r * cap], from->length[r]);
@@ -184,11 +188,18 @@ void printMailbox(Mailbox *mailbox)
 
 void withdraw(Mailbox *mailbox)
 {
+    if (mailbox->wNum == 0)
+    {
+        printf("No message to withdraw\n");
+        return;
+    }
+    printf("Sems:\nwm: %d, rm: %d\n", semctl(mailbox->wm, 0, GETVAL), semctl(mailbox->rm, 0, GETVAL));
+    printf("freecnt: %d, mailcnt: %d\nRecalling...\n", semctl(mailbox->freeCnt, 0, GETVAL), semctl(mailbox->mailCnt, 0, GETVAL));
+
     P(mailbox->mailCnt);
     P(mailbox->wm);
     P(mailbox->rm);
-    if (mailbox->rNum > 0)
-        mailbox->rNum--;
+    mailbox->wNum--;
     V(mailbox->rm);
     V(mailbox->wm);
     V(mailbox->freeCnt);
