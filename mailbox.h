@@ -137,8 +137,8 @@ void send(Mailbox *target, char *str, int len)
         return;
     }
     // DEBUG
-    printf("Sems:\nwm: %d, rm: %d\n", semctl(target->wm, 0, GETVAL), semctl(target->rm, 0, GETVAL));
-    printf("freecnt: %d, mailcnt: %d\n\n", semctl(target->freeCnt, 0, GETVAL), semctl(target->mailCnt, 0, GETVAL));
+    //printf("Sems:\nwm: %d, rm: %d\n", semctl(target->wm, 0, GETVAL), semctl(target->rm, 0, GETVAL));
+    //printf("freecnt: %d, mailcnt: %d\n\n", semctl(target->freeCnt, 0, GETVAL), semctl(target->mailCnt, 0, GETVAL));
 
     P(target->wm);
     P(target->freeCnt);
@@ -153,8 +153,8 @@ void send(Mailbox *target, char *str, int len)
 void receive(Mailbox *from, char *str)
 {
     int r = from->rNum, c = from->containerCnt, cap = from->capacity;
-    printf("Sems:\nwm: %d, rm: %d\n", semctl(from->wm, 0, GETVAL), semctl(from->rm, 0, GETVAL));
-    printf("freecnt: %d, mailcnt: %d\n\n", semctl(from->freeCnt, 0, GETVAL), semctl(from->mailCnt, 0, GETVAL));
+    //printf("Sems:\nwm: %d, rm: %d\n", semctl(from->wm, 0, GETVAL), semctl(from->rm, 0, GETVAL));
+    //printf("freecnt: %d, mailcnt: %d\n\n", semctl(from->freeCnt, 0, GETVAL), semctl(from->mailCnt, 0, GETVAL));
 
     P(from->rm);
     P(from->mailCnt);
@@ -186,6 +186,7 @@ void printMailbox(Mailbox *mailbox)
     printf("\n");
 }
 
+/*
 void withdraw(Mailbox *mailbox)
 {
     if (mailbox->wNum == 0)
@@ -204,6 +205,7 @@ void withdraw(Mailbox *mailbox)
     V(mailbox->wm);
     V(mailbox->freeCnt);
 }
+*/
 
 void deleteMailbox(Mailbox *mailbox)
 {
